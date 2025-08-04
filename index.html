@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>正在準備你的驚喜…</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <style>
+    body {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      height:100vh;
+      margin:0;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+      background:#0f111a;
+      color:#fff;
+      text-align:center;
+    }
+    #btn {
+      margin-top:20px;
+      padding:12px 24px;
+      border:none;
+      border-radius:8px;
+      background:#6366f1;
+      color:#fff;
+      font-size:16px;
+      cursor:pointer;
+    }
+    #note {
+      font-size:14px;
+      opacity:0.8;
+      margin-top:8px;
+    }
+  </style>
+</head>
+<body>
+  <h1>正在解鎖你的驚喜…</h1>
+  <p>為了安全，請點下面按鈕繼續</p>
+  <button id="btn">繼續</button>
+  <div id="note">（看起來像驗證，其實就一個小動作）</div>
+
+  <script>
+    const btn = document.getElementById('btn');
+    btn.addEventListener('click', () => {
+      localStorage.setItem('didInteract', '1');
+      window.location.href = 'player.html';
+    });
+    if (localStorage.getItem('didInteract') === '1') {
+      window.location.href = 'player.html';
+    }
+  </script>
+</body>
+</html>
