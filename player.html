@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Loading…</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <style>
+    body,html {
+      margin:0;
+      padding:0;
+      background:black;
+      height:100%;
+      overflow:hidden;
+    }
+    video {
+      width:100vw;
+      height:100vh;
+      object-fit:cover;
+      display:block;
+    }
+    #fallback {
+      position:fixed;
+      inset:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      background:rgba(0,0,0,0.75);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
+      gap:12px;
+    }
+    #unmute-btn {
+      padding:10px 20px;
+      background:#10b981;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:16px;
+      color:#fff;
+    }
+  </style>
+</head>
+<body>
+  <video id="v" autoplay playsinline loop>
+    <source src="rickroll.mp4" type="video/mp4">
+    Your browser does not support video.
+  </video>
+
+  <div id="fallback" style="display:none;">
+    <div>看起來自動播放被瀏覽器擋住了</div>
+    <button id="unmute-btn">點我播放有聲音</button>
+  </div>
+
+  <script>
+    const v = document.getElementById('v');
+    const fallback = document.getElementById('fallback');
+    const btn = document.getElementById('unmute-btn');
+
+    // 嘗試播放
+    v.muted = false;
+    v.play().catch(() => {
+      // 播放被阻擋
+      fallback.style.display = 'flex';
+      v.muted = true;
+    });
+
+    btn.addEventListener('click', async () => {
+      v.muted = false;
+      try {
+        await v.play();
+        fallback.style.display = 'none';
+      } catch (e) {
+        console.warn('再試一次', e);
+      }
+    });
+  </script>
+</body>
+</html>
