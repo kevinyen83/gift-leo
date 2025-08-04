@@ -8,9 +8,10 @@
     body,html {
       margin:0;
       padding:0;
-      background:black;
+      background:#000;
       height:100%;
       overflow:hidden;
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
     }
     video {
       width:100vw;
@@ -18,7 +19,7 @@
       object-fit:cover;
       display:block;
     }
-    #fallback {
+    #overlay {
       position:fixed;
       inset:0;
       display:flex;
@@ -26,53 +27,94 @@
       align-items:center;
       justify-content:center;
       color:#fff;
-      background:rgba(0,0,0,0.75);
-      font-family:system-ui,-apple-system,BlinkMacSystemFont,sans-serif;
-      gap:12px;
+      background:#000;
+      gap:16px;
+      z-index:10;
     }
-    #unmute-btn {
-      padding:10px 20px;
+    #play-btn {
+      padding:14px 28px;
       background:#10b981;
       border:none;
       border-radius:6px;
       cursor:pointer;
-      font-size:16px;
+      font-size:18px;
       color:#fff;
+      font-weight:600;
+    }
+    #fallback {
+      position:fixed;
+      inset:0;
+      display:none;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      background:rgba(0,0,0,0.85);
+      gap:12px;
+      z-index:20;
+      text-align:center;
+    }
+    #retry-btn {
+      padding:10px 20px;
+      background:#f59e0b;
+      border:none;
+      border-radius:6px;
+      cursor:pointer;
+      font-size:16px;
+      color:#000;
+    }
+    .small {
+      font-size:14px;
+      opacity:0.9;
     }
   </style>
 </head>
 <body>
-  <video id="v" autoplay playsinline loop>
+  <video id="v" playsinline loop preload="auto">
     <source src="rickroll.mp4" type="video/mp4">
     Your browser does not support video.
   </video>
 
-  <div id="fallback" style="display:none;">
-    <div>看起來自動播放被瀏覽器擋住了</div>
-    <button id="unmute-btn">點我播放有聲音</button>
+  <div id="overlay">
+    <div style="font-size:24px; font-weight:600;">準備好了嗎？</div>
+    <button id="play-btn">點我播放有聲音</button>
+    <div class="small">按下後影片才會開始，有聲音會開啟。</div>
+  </div>
+
+  <div id="fallback">
+    <div>播放被瀏覽器擋住了，請再按一次。</div>
+    <button id="retry-btn">再試一次</button>
+    <div class="small">如果還是沒聲音，確認系統/瀏覽器音量跟靜音開關。</div>
   </div>
 
   <script>
     const v = document.getElementById('v');
+    const overlay = document.getElementById('overlay');
+    const playBtn = document.getElementById('play-btn');
     const fallback = document.getElementById('fallback');
-    const btn = document.getElementById('unmute-btn');
+    const retry = document.getElementById('retry-btn');
 
-    // 嘗試播放
-    v.muted = false;
-    v.play().catch(() => {
-      // 播放被阻擋
-      fallback.style.display = 'flex';
-      v.muted = true;
-    });
+    v.muted = true;
 
-    btn.addEventListener('click', async () => {
+    async function tryPlayWithSound() {
       v.muted = false;
       try {
         await v.play();
+        overlay.style.display = 'none';
         fallback.style.display = 'none';
-      } catch (e) {
-        console.warn('再試一次', e);
+      } catch (err) {
+        // 如果有錯誤，顯示 fallback 提示再試一次
+        console.warn('播放失敗:', err);
+        fallback.style.display = 'flex';
       }
+    }
+
+    playBtn.addEventListener('click', async () => {
+      await tryPlayWithSound();
+    });
+
+    retry.addEventListener('click', async () => {
+      await tryPlayWithSound();
     });
   </script>
 </body>
